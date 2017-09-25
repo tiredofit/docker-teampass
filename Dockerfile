@@ -9,7 +9,7 @@ LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
       RUN apk update && \
           apk upgrade && \
           apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing \
-          gnu-libiconv && \
+              gnu-libiconv \
           && \
       
       rm -rf /var/cache/apk/*
