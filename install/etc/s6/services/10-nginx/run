@@ -1,0 +1,64 @@
+#!/usr/bin/with-contenv bash
+
+if [ ! -f /tmp/state/10-nginx ]; then
+
+sleep 2
+
+  ### Make sure that DB is accessible
+  while true; do
+    mysqlcmd='mysql -u'$DB_USER' -h'$DB_HOST' -p'$DB_PASS 
+    out="`$mysqlcmd -e "SELECT COUNT(*) FROM information_schema.FILES;" 2>&1`"
+    echo "$out" | grep -E "COUNT|Enter" 2>&1 > /dev/null
+    if [ $? -eq 0 ]; then
+      echo "Server is up !"
+      break
+    fi
+    echo "DB server still isn't up, sleeping a little bit ..."
+    sleep 2
+  done
+
+
+  ### Check to see if Installed, or Configured..
+  echo "Checking Teampass Files"
+    if [ -f /www/teampass/index.php ] ;
+    then
+      echo "Found Teampass.. Checking if it is configured ..."
+      if [ -f /www/teampass/includes/config/settings.php ] ;
+      then
+        rm -rf /www/teampass/install
+        chown -R nginx:www-data /www/teampass
+      else
+        echo "Teampass is not configured! Please visit the website to complete installation..."
+      fi
+  else
+    echo "No Installation Found - Installing.."
+    mkdir -p /www/teampass
+    curl https://codeload.github.com/nilsteampassnet/TeamPass/tar.gz/${TEAMPASS_VERSION}| tar xvfz - --strip 1 -C /www/teampass
+    
+    mkdir -p /www/sk
+    sed -i -e 's/ \"function\*mysqli_fetch_all\",//g' /www/teampass/install/install.js
+
+  ### Force Reset Permissions for Security
+    chown -Rf nginx:www-data /www/teampass
+    chown -Rf nginx:www-data /www/sk
+  fi
+
+    chown -Rf nginx:www-data /www/teampass
+    chown -Rf nginx:www-data /www/sk
+
+
+## Start nginx
+  mkdir -p /www/logs/nginx
+  mkdir -p /www/logs/smtp
+  mkdir -p /tmp/nginx
+  chown -R nginx /www/logs/nginx
+  chown -R nginx /www/logs/smtp
+  chown nginx /tmp/nginx
+  mkdir -p /tmp/state
+  echo 'Initialization Complete' >/tmp/state/10-nginx
+fi
+
+echo ''
+echo '** Starting nginx..'
+
+exec nginx

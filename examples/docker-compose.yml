@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+  teampass-app:
+    image: tiredofit/teampass
+    container_name: teampass-app
+    links:
+    - teampass-db
+    volumes:
+    - ./data/:/www/
+    - ./logs/:/www/logs
+    environment:
+    - VIRTUAL_HOST=teampass.example.org
+    - VIRTUAL_NETWORK=nginx-proxy
+    - VIRTUAL_PORT=80
+    - LETSENCRYPT_HOST=teampass.example.org
+    - LETSENCRYPT_EMAIL=email@example.org
+
+    - DB_HOST=teampass-db
+    - DB_NAME=teampass
+    - DB_USER=teampass
+    - DB_PASS=userpassword
+    networks:
+      - proxy-tier
+    restart: always
+
+  teampass-db:
+    image: tiredofit/mariadb
+    container_name: teampass-db
+    volumes:
+      - ./db:/var/local/db/teampass
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=teampass
+      - MYSQL_USER=teampass
+      - MYSQL_PASSWORD=userpassword
+    networks:
+      - proxy-tier
+    restart: always
+
+networks:
+  proxy-tier:
+    external:
+      name: nginx-proxy
+
+
