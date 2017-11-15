@@ -1,3 +1,11 @@
+## 1.21 2017-11-15 <dave at tiredofit dot ca>
+
+* Version Bump to 2.1.27.10 to fix Entries display issues
+
+## 1.2 2017-11-02 <dave at tiredofit dot ca>
+
+* Version bump to 2.1.27.9
+
 ## 1.1 2017-07-12 <dave at tiredofit dot ca>
 
 * Alpine - Based on tiredofit/nginx-php-fpm:7.1
