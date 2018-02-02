@@ -1,3 +1,7 @@
+## 1.3 2018-02-01 <dave at tiredofit dot ca>
+
+* Rebase
+    
 ## 1.21 2017-11-15 <dave at tiredofit dot ca>
 
 * Version Bump to 2.1.27.10 to fix Entries display issues
