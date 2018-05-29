@@ -2,7 +2,7 @@ FROM tiredofit/nginx-php-fpm:7.1-latest
 LABEL maintainer="Dave Conroy (dave at tiredofit dot ca)"
 
 ### Set Environment Variables
-   ENV TEAMPASS_VERSION=2.1.27.10
+   ENV TEAMPASS_VERSION=2.1.27.16
 
 ### Dependencies Installation
    

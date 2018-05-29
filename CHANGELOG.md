@@ -1,3 +1,7 @@
+## 1.4 2018-05-29 <dave at tiredofit dot ca>
+
+* Bump to 2.1.27.16
+
 ## 1.3 2018-02-01 <dave at tiredofit dot ca>
 
 * Rebase
