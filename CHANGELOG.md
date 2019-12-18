@@ -1,3 +1,36 @@
+## 2.0.2 2019-12-18 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Change to support dynamic web user/group
+
+
+## 2.0.1 2019-12-04 <dave at tiredofit dot ca>
+
+   ### Added
+      - Update to support new nginx-php-fpm base image
+
+
+## 2.0  2019-09-26 <dave at tiredofit dot ca>
+
+* Refactored Image
+* Basic Upgrade Check
+* Support for HTTP Authentication
+* Custom Assets Support
+
+## 1.4.3 2019-09-25 <dave at tiredofit dot ca>
+
+* PHP 7.3
+
+## 1.4.2 2019-09-25 <dave at tiredofit dot ca>
+
+* Bump to Teampass 2.1.27.36
+
+## 1.4.1 2018-10-29 <dave at tiredofit dot ca>
+
+* Bump to Alpine 3.8
+* Bump to PHP 7.2
+* Bump to 2.1.27.24
+
 ## 1.4 2018-05-29 <dave at tiredofit dot ca>
 
 * Bump to 2.1.27.16
