@@ -1,14 +1,8 @@
 #!/usr/bin/with-contenv bash
 
-source /assets/functions/*
+for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="teampass"
-
-while [ ! -f /tmp/state/init-20-php-fpm ]
-do
-  sleep 1
-done
-
-
+check_service_initialized init 20-php-fpm
 
 ### Set Defaults
 DB_PORT=${DB_PORT:-3306}
@@ -20,9 +14,8 @@ sanity_db
 db_check mariadb
 
 ### Check to see if Installed, or Configured..
-print_info "Checking Teampass Files"
 if [ -f ${NGINX_WEBROOT}/index.php ]; then
-  print_info "Found Teampass Files. Checking if it is configured ..."
+  print_notice "Found Teampass Files. Checking if it is configured ..."
   if [ -f ${NGINX_WEBROOT}/includes/config/settings.php ] ; then
       if [ -f ${NGINX_WEBROOT}/.version ] ; then
         if [ "$TEAMPASS_VERSION" != `head -n 1 ${NGINX_WEBROOT}/.version | awk '{print $1'}` ]; then
