@@ -11,7 +11,7 @@ DB_PORT=${DB_PORT:-3306}
 sanity_db
 
 ### Make sure that DB is accessible
-db_check mariadb
+db_ready mariadb
 
 ### Check to see if Installed, or Configured..
 if [ -f ${NGINX_WEBROOT}/index.php ]; then
