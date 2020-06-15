@@ -1,7 +1,7 @@
-## 2.2.0 2020-06-09 <dave at tiredofit dot ca>
+## 2.1.2 2020-06-15 <dave at tiredofit dot ca>
 
    ### Added
-      - Update to support tiredofit/alpine 5.0.0 base image
+      - Switch to PHP 7.3
 
 
 ## 2.1.1 2020-01-02 <dave at tiredofit dot ca>
