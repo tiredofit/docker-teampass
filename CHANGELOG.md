@@ -1,3 +1,10 @@
+## 2.1.3 2021-09-14 <dave at tiredofit dot ca>
+
+   ### Changed
+      - Refresh image for security and performance purposes
+      - Stop pulling gnu-libiconv from testing, it is in regular repositories
+
+
 ## 2.1.2 2020-06-15 <dave at tiredofit dot ca>
 
    ### Added
