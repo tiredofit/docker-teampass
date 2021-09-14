@@ -11,7 +11,7 @@ ENV TEAMPASS_VERSION=2.1.27.36 \
 ### Dependencies Installation
 RUN set -x && \
     apk update && \
-    apk upgrade 
+    apk upgrade && \
     apk add -t .teampass-run-deps \
                gnu-libiconv \
                && \
