@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 
 for s in /assets/functions/*; do source $s; done
 PROCESS_NAME="teampass"
