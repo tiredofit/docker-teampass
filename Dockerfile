@@ -1,22 +1,37 @@
-FROM docker.io/tiredofit/nginx-php-fpm:7.3
+FROM docker.io/tiredofit/nginx-php-fpm:8.1
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set Environment Variables
-ENV TEAMPASS_VERSION=2.1.27.36 \
+ENV TEAMPASS_VERSION=3.0.0.17 \
+    TEAMPASS_REPO_URL=https://github.com/nilsteampassnet/TeamPass \
     PHP_ENABLE_CREATE_SAMPLE_PHP=FALSE \
     PHP_ENABLE_LDAP=TRUE \
     PHP_ENABLE_MYSQLI=TRUE \
-    NGINX_WEBROOT=/www/teampass
+    NGINX_WEBROOT=/www/teampass \
+    IMAGE_NAME="tiredofit/teampass" \
+    IMAGE_REPO_URL="https://github.com/tiredofit/docker-teampass/"
 
 ### Dependencies Installation
 RUN set -x && \
     apk update && \
     apk upgrade && \
+    apk add -t .teampass-build-deps \
+               git \
+               && \
     apk add -t .teampass-run-deps \
                gnu-libiconv \
                && \
     \
-    rm -rf /var/cache/apk/*
+    php-ext enable core && \
+    mkdir -p /assets/install && \
+    git clone ${TEAMPASS_REPO_URL} /assets/install && \
+    cd /assets/install && \
+    git checkout ${TEAMPASS_VERSION} && \
+    chown -R ${NGINX_USER}:${NGINX_GROUP} /assets/install && \
+    chmod -R +w /assets/install/install && \
+    rm -rf /assets/install/*.md /assets/install/*.sh /assets/install/*.yml /assets/install/Dockerfile && \
+    apk del .teampass-build-deps && \
+    rm -rf /var/tmp/* /var/cache/apk/*
 
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 

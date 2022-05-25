@@ -1,0 +1,5 @@
+#!/command/with-contenv bash
+
+DB_PORT=${DB_PORT:-3306}
+ENABLE_AUTO_UPDATE=${ENABLE_AUTO_UPDATE:-"TRUE"}
+SETUP_TYPE=${SETUP_TYPE:-"AUTO"}

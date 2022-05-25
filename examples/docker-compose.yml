@@ -1,41 +1,62 @@
-version: '3.7'
+version: '2.4'
 services:
 
-  teampass-app:
-    image: tiredofit/teampass
-    container_name: teampass-app
+  teampass-example-com-app:
+    image: tiredofit/teampass:develop
+    container_name: teampass-example-com-app
     links:
-      - teampass-db
+      - teampass-example-com-db
     labels:
       - traefik.enable=true
-      - traefik.frontend.rule=Host:teampass.example.org
-      - traefik.port=80
-      - traefik.protocol=http
-      - traefik.docker.network=proxy
-      - traefik.backend=teampass-app
+      - traefik.http.routers.teampass-example-com.rule=Host(`teampass.example.com`)
+      - traefik.http.services.teampass-example-com.loadbalancer.server.port=80
     volumes:
-      - ./data/:/www/
+      - ./data:/data
       - ./logs/:/www/logs
     environment:
-      - DB_HOST=teampass-db
-      - DB_NAME=teampass
-      - DB_USER=teampass
-      - DB_PASS=userpassword
+      - TIMEZONE=America/Vancouver
+      - CONTAINER_NAME=teampass-example-com-app
     networks:
       - proxy
       - services
     restart: always
 
-  teampass-db:
-    image: tiredofit/mariadb
-    container_name: teampass-db
+  teampass-example-com-db:
+    image: tiredofit/mariadb:10.7-latest
+    container_name: teampass-example-com-db
     volumes:
-      - ./db:/var/local/db/teampass
+      - /var/local/db/teampass.example.com:/var/lib/mysql
     environment:
+      - CONTAINER_NAME=teampass-example-com-db
+      - TIMEZONE=America/Vancouver
       - ROOT_PASS=password
       - DB_NAME=teampass
       - DB_USER=teampass
-      - DB_PASS=userpassword
+      - DB_PASS=password
+    networks:
+      - services
+    restart: always
+
+  teampass-example-com-db-backup:
+    image: tiredofit/db-backup:latest
+    container_name: teampass-example-com-db-backup
+    links:
+      - teampass-example-com-db
+    volumes:
+      - ./dbbackup:/backup
+    environment:
+      - TIMEZONE=America/Vancouver
+      - CONTAINER_NAME=teampass-example-com-db-backup
+      - DB_HOST=teampass-example-com-db
+      - DB_TYPE=mysql
+      - DB_NAME=teampass-example-com
+      - DB_USER=teampass
+      - DB_PASS=password
+      - DB_DUMP_FREQ=1440
+      - DB_DUMP_BEGIN=0347
+      - DB_CLEANUP_TIME=8640
+      - MD5=TRUE
+      - COMPRESSION=ZSTD
     networks:
       - services
     restart: always

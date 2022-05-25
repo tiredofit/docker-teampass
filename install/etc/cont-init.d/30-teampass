@@ -1,52 +1,86 @@
 #!/command/with-contenv bash
 
-for s in /assets/functions/*; do source $s; done
+source /assets/functions/00-container
+prepare_service
 PROCESS_NAME="teampass"
-check_service_initialized init 20-php-fpm
 
-### Set Defaults
-DB_PORT=${DB_PORT:-3306}
+#sanity_db
+#db_ready mariadb
 
-### Sanity Test
-sanity_db
+### Check if New Install
+if [ ! -f "${NGINX_WEBROOT}/error.php" ]; then
+    print_warn "Potential New Installation / Standalone Installation Detected - Copying Teampass Sourcecode"
+    mkdir -p "${NGINX_WEBROOT}"
+    cp -R /assets/install/* "${NGINX_WEBROOT}"
+fi
 
-### Make sure that DB is accessible
-db_ready mariadb
+if [ -d "/data" ]; then
+  print_warn "Detected /data directory. Persistently saving settings/encryption keys"
+  cp -aR "${NGINX_WEBROOT}"/files /data/
+  rm -rf "${NGINX_WEBROOT}"/files
+  ln -sf /data/files "${NGINX_WEBROOT}"/files
+  cp -aR "${NGINX_WEBROOT}"/upload /data/
+  rm -rf "${NGINX_WEBROOT}"/upload
+  ln -sf /data/upload "${NGINX_WEBROOT}"/upload
+  cp -aR "${NGINX_WEBROOT}"/includes/avatars /data
+  rm -rf "${NGINX_WEBROOT}"/includes/avatars
+  ln -sf /data/avatars "${NGINX_WEBROOT}"/includes/avatars
 
-### Check to see if Installed, or Configured..
-if [ -f ${NGINX_WEBROOT}/index.php ]; then
-  print_notice "Found Teampass Files. Checking if it is configured ..."
-  if [ -f ${NGINX_WEBROOT}/includes/config/settings.php ] ; then
-      if [ -f ${NGINX_WEBROOT}/.version ] ; then
-        if [ "$TEAMPASS_VERSION" != `head -n 1 ${NGINX_WEBROOT}/.version | awk '{print $1'}` ]; then
-          print_warn "Detected New Version from original installation, Please visit your Site_URL/install/upgrade.php"
-          echo $TEAMPASS_VERSION 'upgraded on '`date` | cat - ${NGINX_WEBROOT}/.version > /tmp/.version && mv /tmp/.version ${NGINX_WEBROOT}/.version
-        else
-          rm -rf ${NGINX_WEBROOT}/install
-          chown -R ${NGINX_USER}:${NGINX_GROUP} ${NGINX_WEBROOT}
-        fi
-      fi  
+  mkdir -p /data/config/keys
+
+  if [ -f "${NGINX_WEBROOT}"/includes/libraries/csrfp/libs/csrfp.config.php ] ; then
+    cp -aR "${NGINX_WEBROOT}"/includes/libraries/csrfp/libs/csrfp.config.php /data/config/csrfp.config
+  fi
+
+  ln -sf /data/config/csrfp.config "${NGINX_WEBROOT}"/includes/libraries/csrfp/libs/csrfp.config.php
+
+  ln -sf /data/config/keys/ /www/sk
+  ln -sf /data/config/settings "${NGINX_WEBROOT}"/includes/config/settings.php
+  ln -sf /data/.teampass-version "${NGINX_WEBROOT}"/.teampass-version
+  chown -R "${NGINX_USER}":"${NGINX_GROUP}" /data
+else
+  if [ ! -e "/www/sk" ] ; then
+    mkdir -p /www/sk
+    chown -R "${NGINX_USER}":"${NGINX_GROUP}" /www/sk
+  fi
+fi
+
+if [ -f "${NGINX_WEBROOT}"/includes/config/settings.php ] ; then
+  if [ -f "${NGINX_WEBROOT}"/.teampass-version ] ; then
+    if [ "${TEAMPASS_VERSION}" != "$(head -n 1 "${NGINX_WEBROOT}"/.teampass-version | awk '{print $1'})" ]; then
+      print_notice "Detected New Version from original installation, Please visit your Site_URL/install/upgrade.php"
+      echo "${TEAMPASS_VERSION} upgraded on $(date)" | cat - "${NGINX_WEBROOT}"/.teampass-version > /tmp/.teampass-version && mv /tmp/.teampass-version ${NGINX_WEBROOT}/.teampass-version
+    else
+      rm -rf "${NGINX_WEBROOT}"/install
+      chown -R "${NGINX_USER}":"${NGINX_GROUP}" "${NGINX_WEBROOT}"
+    fi
   else
-        print_warn "Teampass is not configured! Please visit the website to complete installation"
+    echo "${TEAMPASS_VERSION} first installed on $(date)" >> "${NGINX_WEBROOT}"/.teampass-version
   fi
 else
-  print_warn "No Installation Found - Fetching Teampass Version ${TEAMPASS_VERSION}"
-  mkdir -p ${NGINX_WEBROOT}
-  curl https://codeload.github.com/nilsteampassnet/TeamPass/tar.gz/${TEAMPASS_VERSION}| tar xvfz - --strip 1 -C ${NGINX_WEBROOT}
-  mkdir -p /www/sk
-  sed -i -e 's/ \"function\*mysqli_fetch_all\",//g' ${NGINX_WEBROOT}/install/install.js
-  print_warn "Please visit your Site_URL to complete installation"
-  echo $TEAMPASS_VERSION 'first installed on '`date`> ${NGINX_WEBROOT}/.version
+  print_warn "Teampass is not configured! Please visit the website to complete installation"
 fi
 
-### Custom File Support
-if [ -d /assets/custom ] ; then
-    print_warn "Custom Files Found, Copying over top of Master"
-    cp -R /assets/custom/* ${NGINX_WEBROOT}
+#  sed -i -e 's/ \"function\*mysqli_fetch_all\",//g' ${NGINX_WEBROOT}/install/install.js
+
+## Copy over any custom files overtop of source
+if [ -d "/assets/custom" ]; then
+    print_warn "Detected Custom Source - Copying over to application"
+    cp -R /assets/custom/* "${NGINX_WEBROOT}"/
+    chown -R "${NGINX_USER}":"${NGINX_GROUP}" "${NGINX_WEBROOT}"
 fi
 
-chown -Rf ${NGINX_USER}:${NGINX_GROUP} ${NGINX_WEBROOT}
-chown -Rf ${NGINX_USER}:${NGINX_GROUP} /www/sk
+## Execute Custom Scripts
+if [ -d "/assets/custom-scripts/" ] ; then
+    print_warn "Found Custom Scripts to Execute"
+    for f in $(find /assets/custom-scripts/ -name \*.sh -type f); do
+        print_warn "Running Script ${f}"
+        ${f}
+    done
+fi
+
+chown -Rf "${NGINX_USER}":"${NGINX_GROUP}" "${NGINX_WEBROOT}"
+chown -Rf "${NGINX_USER}":"${NGINX_GROUP}" /www/sk
 
 print_info "Container Initialized - Now starting Web Services"
 liftoff
