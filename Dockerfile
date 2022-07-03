@@ -7,6 +7,7 @@ ENV TEAMPASS_VERSION=3.0.0.17 \
     PHP_ENABLE_CREATE_SAMPLE_PHP=FALSE \
     PHP_ENABLE_LDAP=TRUE \
     PHP_ENABLE_MYSQLI=TRUE \
+    PHP_FPM_OUTPUT_BUFFER_SIZE=4096 \
     NGINX_WEBROOT=/www/teampass \
     IMAGE_NAME="tiredofit/teampass" \
     IMAGE_REPO_URL="https://github.com/tiredofit/docker-teampass/"

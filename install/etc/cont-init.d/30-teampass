@@ -8,7 +8,7 @@ PROCESS_NAME="teampass"
 #db_ready mariadb
 
 ### Check if New Install
-if [ ! -f "${NGINX_WEBROOT}/error.php" ]; then
+if [ ! -f "${NGINX_WEBROOT}"/error.php ]; then
     print_warn "Potential New Installation / Standalone Installation Detected - Copying Teampass Sourcecode"
     mkdir -p "${NGINX_WEBROOT}"
     cp -R /assets/install/* "${NGINX_WEBROOT}"
