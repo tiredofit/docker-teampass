@@ -1,3 +1,9 @@
+## 2.1.6 2022-07-06 <dave at tiredofit dot ca>
+
+   ### Changed
+      - IMAGE_REPO_URL fix
+
+
 ## 2.1.5 2022-07-06 <dave at tiredofit dot ca>
 
    ### Added

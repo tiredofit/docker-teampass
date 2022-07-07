@@ -9,7 +9,7 @@ ENV TEAMPASS_VERSION=2.1.27.36 \
     NGINX_WEBROOT=/www/teampass \
     NGINX_SITE_ENABLED=teampass \
     IMAGE_NAME=tiredofit/teampass \
-    IMAGE_REPO_URL=https://github.com/tiredofit/docker-teampass/"
+    IMAGE_REPO_URL="https://github.com/tiredofit/docker-teampass/"
 
 ### Dependencies Installation
 RUN set -x && \
