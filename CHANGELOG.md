@@ -1,3 +1,9 @@
+## 2.1.5 2022-07-06 <dave at tiredofit dot ca>
+
+   ### Added
+      - Modernize image to support new base
+
+
 ## 2.1.4 2022-02-10 <dave at tiredofit dot ca>
 
    ### Changed
