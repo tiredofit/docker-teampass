@@ -2,7 +2,7 @@ FROM docker.io/tiredofit/nginx-php-fpm:8.1
 LABEL maintainer="Dave Conroy (github.com/tiredofit)"
 
 ### Set Environment Variables
-ENV TEAMPASS_VERSION=3.0.0.17 \
+ENV TEAMPASS_VERSION=3.0.0.21 \
     TEAMPASS_REPO_URL=https://github.com/nilsteampassnet/TeamPass \
     PHP_ENABLE_CREATE_SAMPLE_PHP=FALSE \
     PHP_ENABLE_LDAP=TRUE \
